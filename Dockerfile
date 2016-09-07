@@ -112,4 +112,5 @@ RUN chmod 777 -R /root/
 RUN npm install -g ionic@${IONIC_VERSION}
 
 COPY ./assets/bin/entrypoint /
+RUN chmod +x /entrypoint
 ENTRYPOINT ["/entrypoint"]
