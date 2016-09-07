@@ -16,8 +16,13 @@ function run_x11vnc() {
 # Environment variables
 #=====================
 
-ENTRYPOINT_ARGS="$@"
-APPIUM_TEST_DIR="/src"
+SAM_DIR="/src"
+NPM_FILE=package.json
+BOWER_FILE=bower.json
+
+if [ -z "$LAUNCH_COMMAND" ]; then
+    LAUNCH_COMMAND="ionic emulate -c"
+fi
 
 if [ -z "$DEVICE" ]; then
     DEVICE="Nexus S"
@@ -34,7 +39,6 @@ fi
 run_xvfb
 run_x11vnc
 
-
 #=====================
 # Update Android SDK if user chose it
 #=====================
@@ -48,25 +52,34 @@ fi
 #=====================
 
 android -s create avd --name Default --target android-$ANDROID_SDK_VERSION --abi $ABI -s 480x800 --force -d "$DEVICE"
-emulator -avd Default &
-
-sleep 30
 
 #=====================
 # Start Appium command
 #=====================
 
-cd $APPIUM_TEST_DIR
-appium | tee appium-docker.log &
-rm -rf /src/target &> /dev/null
-/bin/bash --login -c "$DOCKER_TESTS_COMMAND"
+cd $SAM_DIR
 
-#=====================
-# Once finished, close everything
-#=====================
+npm rebuild node-sass
 
-adb -s emulator-5554 emu kill &
-T_PID=$(ps aux | grep /bin/appium | awk 'NR==1{print $2}')
-kill -9 $T_PID
+# Checking if there is a npm file
+if [ -f "$NPM_FILE" ]
+  then
+  npm install
+  npm update
+fi
 
-chown -R $HOST_UID:$HOST_GID /src/target
+# Checking if there is a bower file
+if [ -f "$BOWER_FILE" ]
+  then
+  bower install --allow-root
+  bower update --allow-root
+fi
+
+gulp profile --development
+
+ionic platform remove android >/dev/null
+ionic platform add android
+
+cordova telemetry on
+gulp remove-zips
+/bin/bash --login -c "$LAUNCH_COMMAND"

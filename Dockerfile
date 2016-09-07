@@ -1,30 +1,30 @@
 FROM ubuntu:14.04
-MAINTAINER Alejandro Gomez <agommor@gmail.com>
+MAINTAINER Pablo M Sobrado <pasogo91@gmail.com>
 
-#================================
+#==========================
 # Build arguments
-#================================
+#==========================
 
 ARG ANDROID_SDK_VERSION=23
 ARG JAVA_VERSION=8
-ARG IONIC_VERSION=1.7.14
+ARG IONIC_VERSION=1.7.16
+ARG CORDOVA_VERSION=6.2.0
 ARG ANDROID_HOME=/opt/android-sdk-linux
 ARG VNC_PASSWD=1234
 
-
-#================================
+#==========================
 # Env variables
-#================================
+#==========================
 
 ENV VNC_PASSWD ${VNC_PASSWD}
 ENV DEBIAN_FRONTEND noninteractive
 ENV ANDROID_SDK_VERSION ${ANDROID_SDK_VERSION}
 ENV ANDROID_SDKTOOLS_VERSION 24.4.1
 ENV JAVA_VERSION ${JAVA_VERSION}
-ENV IONIC_VERSION ${APPIUM_VERSION}
+ENV IONIC_VERSION ${IONIC_VERSION}
+ENV CORDOVA_VERSION ${CORDOVA_VERSION}
 ENV ANDROID_HOME ${ANDROID_HOME}
 ENV SDK_PACKAGES \
-tools,\
 platform-tools,\
 build-tools-23.0.3,\
 build-tools-23.0.2,\
@@ -44,15 +44,14 @@ extra-android-support,\
 extra-google-google_play_services,\
 extra-google-m2repository
 
-
-#================================
+#==========================
 # Install Android SDK's and Platform tools, among with other necessary packages
-#================================
+#==========================
 
 ADD assets/etc/apt/apt.conf.d/99norecommends /etc/apt/apt.conf.d/99norecommends
 ADD assets/etc/apt/sources.list /etc/apt/sources.list
 
-RUN apt-get update -y \
+RUN apt-get update -y && apt-get -y upgrade \
   && apt-get install -y software-properties-common python-software-properties \
   && add-apt-repository ppa:openjdk-r/ppa -y \
   && apt-get update -y \
@@ -62,6 +61,7 @@ RUN apt-get update -y \
     libvirt-bin \
     qemu-kvm \
     libxi6 \
+    build-essential \
     libgconf-2-4 \
     libc6-i386 \
     lib32stdc++6 \
@@ -79,39 +79,37 @@ RUN apt-get update -y \
   && mv /tmp/android-sdk-linux $ANDROID_HOME \
   && apt-get -qqy clean && rm -rf /var/cache/apt/*
   
-RUN echo y | $ANDROID_HOME/tools/android update sdk -s -u -a -t ${SDK_PACKAGES}
+RUN echo 'y' | $ANDROID_HOME/tools/android update sdk -s -u -a -t ${SDK_PACKAGES} \
+  && echo 'y' | $ANDROID_HOME/tools/android update sdk -s -u -a -t tools \
+  && mv $ANDROID_HOME/temp/tools_*.zip $ANDROID_HOME/tools.zip \
+  && unzip $ANDROID_HOME/tools.zip -d $ANDROID_HOME/ \
+  && rm -rf $ANDROID_HOME/extras/android/m2repository \
+  && echo 'y' | $ANDROID_HOME/tools/android update sdk --no-ui
 
 ENV PATH $PATH:$ANDROID_HOME/platform-tools:$ANDROID_HOME/tools
 
-#================================
+#==========================
 # X11 Configuration
-#================================
+#==========================
 
-ENV X11_RESOLUTION "1280x1024x24"
+ENV X11_RESOLUTION "800x600x24"
 ENV DISPLAY :1
 ENV SHELL "/bin/bash"
 
 #==========================
-# Install Appium Dependencies
+# Install SAM Dependencies
 #==========================
 
-RUN curl -sL https://deb.nodesource.com/setup_6.x | bash - \
-  && apt-get -qqy install \
-    nodejs \
-    python \
-    make \
-    build-essential \
-    g++
-
-#=====================
-# Install Appium
-#=====================
-
-RUN npm install -g ionic@$IONIC_VERSION cordova@6.2.0 bower gulp
-
-EXPOSE 4723
-
-RUN ln -s $ANDROID_HOME/platform-tools/adb /usr/local/sbin/adb
+RUN curl -sL https://deb.nodesource.com/setup_6.x | sudo -E bash - \
+  && apt-get install -y nodejs \
+  && npm install -g bower \
+  && npm install -g gulp \
+  && npm install -g cordova@${CORDOVA_VERSION} \
+  && ln -s $ANDROID_HOME/platform-tools/adb /usr/local/sbin/adb
+  
+RUN chmod 777 -R /root/
+  
+RUN npm install -g ionic@${IONIC_VERSION}
 
 COPY ./assets/bin/entrypoint /
 ENTRYPOINT ["/entrypoint"]
