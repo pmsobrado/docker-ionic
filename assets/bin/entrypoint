@@ -1,0 +1,72 @@
+#!/bin/bash
+set -x
+
+#=====================
+# Functions for the VNC utility
+#=====================
+
+function run_xvfb() {
+        pgrep Xvfb || Xvfb $DISPLAY -screen 0 $X11_RESOLUTION &> /dev/null &
+}
+function run_x11vnc() {
+  pgrep x11vnc || x11vnc -display $DISPLAY -shared -xkb -skip_lockkeys -forever -noxdamage -passwd $VNC_PASSWD &> /dev/null &
+}
+
+#=====================
+# Environment variables
+#=====================
+
+ENTRYPOINT_ARGS="$@"
+APPIUM_TEST_DIR="/src"
+
+if [ -z "$DEVICE" ]; then
+    DEVICE="Nexus S"
+fi
+
+if [ -z "$ABI" ]; then
+    ABI="default/x86_64"
+fi 
+
+#=====================
+# Start VNC
+#=====================
+
+run_xvfb
+run_x11vnc
+
+
+#=====================
+# Update Android SDK if user chose it
+#=====================
+
+if [ "$UPDATE" == "y" ]; then
+  echo 'y' | android update sdk --no-ui
+fi
+
+#=====================
+# Create/start the emulator
+#=====================
+
+android -s create avd --name Default --target android-$ANDROID_SDK_VERSION --abi $ABI -s 480x800 --force -d "$DEVICE"
+emulator -avd Default &
+
+sleep 30
+
+#=====================
+# Start Appium command
+#=====================
+
+cd $APPIUM_TEST_DIR
+appium | tee appium-docker.log &
+rm -rf /src/target &> /dev/null
+/bin/bash --login -c "$DOCKER_TESTS_COMMAND"
+
+#=====================
+# Once finished, close everything
+#=====================
+
+adb -s emulator-5554 emu kill &
+T_PID=$(ps aux | grep /bin/appium | awk 'NR==1{print $2}')
+kill -9 $T_PID
+
+chown -R $HOST_UID:$HOST_GID /src/target
