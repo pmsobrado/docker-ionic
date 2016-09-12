@@ -1,6 +1,8 @@
 # docker-ionic
 Docker image to run your ionic app against a defined Android emulador and SDK
 
+[![](https://images.microbadger.com/badges/image/pasogo/docker-ionic.svg)](https://hub.docker.com/r/pasogo/docker-ionic/)
+
 # Table of Contents
   - [Prerequisites](#prerequisites)
   - [Build instructions](#build-instructions)
