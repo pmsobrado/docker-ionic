@@ -60,7 +60,9 @@ RUN apt-get update -y && apt-get -y upgrade \
     x11vnc \
     libvirt-bin \
     qemu-kvm \
+    git \
     libxi6 \
+    psmisc \
     build-essential \
     libgconf-2-4 \
     libc6-i386 \
@@ -92,7 +94,7 @@ ENV PATH $PATH:$ANDROID_HOME/platform-tools:$ANDROID_HOME/tools
 # X11 Configuration
 #==========================
 
-ENV X11_RESOLUTION "800x600x24"
+ENV X11_RESOLUTION "480x600x24"
 ENV DISPLAY :1
 ENV SHELL "/bin/bash"
 

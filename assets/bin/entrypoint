@@ -6,10 +6,10 @@ set -x
 #=====================
 
 function run_xvfb() {
-        pgrep Xvfb || Xvfb $DISPLAY -screen 0 $X11_RESOLUTION &> /dev/null &
+  killall Xvfb && pgrep Xvfb || Xvfb $DISPLAY -screen 0 $X11_RESOLUTION &> /dev/null &
 }
 function run_x11vnc() {
-  pgrep x11vnc || x11vnc -display $DISPLAY -shared -xkb -skip_lockkeys -forever -noxdamage -passwd $VNC_PASSWD &> /dev/null &
+  killall x11vnc && pgrep x11vnc || x11vnc -display $DISPLAY -shared -xkb -skip_lockkeys -forever -noxdamage -passwd $VNC_PASSWD &> /dev/null &
 }
 
 #=====================
@@ -20,17 +20,47 @@ SAM_DIR="/src"
 NPM_FILE=package.json
 BOWER_FILE=bower.json
 
-if [ -z "$LAUNCH_COMMAND" ]; then
-    LAUNCH_COMMAND="ionic emulate -c"
+#=====================
+# Store the IP to specify to ionic command to avoid user interaction
+#=====================
+
+if [[ $(ifconfig eth | grep 'inet addr:' -m 1 | cut -d: -f2 | awk '{ print $1}') == "" ]]; then
+    IP=$(ifconfig wlan | grep 'inet addr:' -m 1 | cut -d: -f2 | awk '{ print $1}')
+else
+    IP=$(ifconfig eth | grep 'inet addr:' -m 1 | cut -d: -f2 | awk '{ print $1}')
 fi
+
+#=====================
+# Default ionic command
+#=====================
+
+if [ -z "$LAUNCH_COMMAND" ]; then
+    LAUNCH_COMMAND="ionic emulate -c --address $IP"
+fi
+
+#=====================
+# Default android emulator device
+#=====================
 
 if [ -z "$DEVICE" ]; then
     DEVICE="Nexus S"
 fi
 
+#=====================
+# Default CPU for emulator
+#=====================
+
 if [ -z "$ABI" ]; then
     ABI="default/x86_64"
-fi 
+fi
+
+#=====================
+# Update Android SDK if user chose it
+#=====================
+
+if [ "$UPDATE_SDK" == "y" ]; then
+  echo 'y' | android update sdk --no-ui
+fi
 
 #=====================
 # Start VNC
@@ -40,15 +70,7 @@ run_xvfb
 run_x11vnc
 
 #=====================
-# Update Android SDK if user chose it
-#=====================
-
-if [ "$UPDATE" == "y" ]; then
-  echo 'y' | android update sdk --no-ui
-fi
-
-#=====================
-# Create/start the emulator
+# Create the emulator
 #=====================
 
 android -s create avd --name Default --target android-$ANDROID_SDK_VERSION --abi $ABI -s 480x800 --force -d "$DEVICE"
@@ -61,25 +83,31 @@ cd $SAM_DIR
 
 npm rebuild node-sass
 
-# Checking if there is a npm file
-if [ -f "$NPM_FILE" ]
-  then
-  npm install
-  npm update
-fi
+if [ "$UPDATE_PLUGINS" == "y" ]; then
 
-# Checking if there is a bower file
-if [ -f "$BOWER_FILE" ]
-  then
-  bower install --allow-root
-  bower update --allow-root
-fi
+    # Checking if there is a npm file
+    if [ -f "$NPM_FILE" ]
+      then
+      npm install
+      npm update
+    fi
 
+    # Checking if there is a bower file
+    if [ -f "$BOWER_FILE" ]
+      then
+      bower install --allow-root
+      bower update --allow-root
+    fi
+    
+fi
 gulp profile --development
 
-ionic platform remove android >/dev/null
-ionic platform add android
+if [ "$UPDATE_PLATFORM" == "y" ]; then
 
-cordova telemetry on
-gulp remove-zips
+    ionic platform remove android >/dev/null
+    ionic platform add android
+
+fi
+
 /bin/bash --login -c "$LAUNCH_COMMAND"
+exit
