@@ -26,8 +26,14 @@ This docker image is designed to run on **Linux** systems, may not work on **Win
 
 You can build your Docker image running the Dockerfile with the following command:
 
+Linux:
 ```
 $ docker build -t pasogo/docker-ionic . && docker rmi -f $(docker images -f "dangling=true" -q) &> /dev/null
+```
+
+Windows:
+```
+docker build -t pasogo/docker-ionic . & docker rmi -f $(docker images -f "dangling=true" -q) > /dev/null
 ```
 
 
@@ -44,8 +50,15 @@ CORDOVA_VERSION=6.2.0
 ```
 
 Usage:
+
+Linux:
 ```
 $ docker build --build-arg JAVA_VERSION=8 --build-arg ANDROID_SDK_VERSION=23 --build-arg VNC_PASSWD=1234 -t amoron/docker-appium . && docker rmi -f $(docker images -f "dangling=true" -q) &> /dev/null
+```
+
+Windows:
+```
+docker build --build-arg JAVA_VERSION=8 --build-arg ANDROID_SDK_VERSION=23 --build-arg VNC_PASSWD=1234 -t amoron/docker-appium . & docker rmi -f $(docker images -f "dangling=true" -q) > /dev/null
 ```
 
 ### Possible inputs
@@ -181,27 +194,45 @@ Click on '**Connect**' -or '**Save**' if you want to store the connection for fu
 
 You can try first stopping and removing the images:
 
+Linux:
 ```
 $ docker stop $(docker ps -a -q) && docker rm -f $(docker ps -a -q)
+```
+
+Windows:
+```
+docker stop $(docker ps -a -q) & docker rm -f $(docker ps -a -q)
 ```
 
 then deleting them with **docker rmi -f image_id**. You can check the images ids by running:
 
 ```
-$ docker images
+docker images
 ```
 
 ### Errors on the VNC connection
 
 You can try first stopping and removing the images:
 
+Linux:
 ```
 $ docker stop $(docker ps -a -q) && docker rm -f $(docker ps -a -q)
 ```
 
+Windows:
+```
+docker stop $(docker ps -a -q) & docker rm -f $(docker ps -a -q)
+```
+
 then running the image again and reconnecting. If the connection still fails, try restarting the docker daemon:
 
+Linux:
 ```
 $ sudo service docker restart
 ```
 
+Windows (as admin):
+```
+net stop com.docker.service
+net start com.docker.service
+```
