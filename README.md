@@ -206,6 +206,11 @@ Linux:
 $ docker stop $(docker ps -a -q) && docker rm -f $(docker ps -a -q)
 ```
 
+Windows:
+```
+for /f "delims=" %i in ('docker ps -a -q') do (docker stop %i & docker rm -f %i)
+```
+
 then deleting them with **docker rmi -f image_id**. You can check the images ids by running:
 
 ```
@@ -219,6 +224,11 @@ You can try first stopping and removing the images:
 Linux:
 ```
 $ docker stop $(docker ps -a -q) && docker rm -f $(docker ps -a -q)
+```
+
+Windows:
+```
+for /f "delims=" %i in ('docker ps -a -q') do (docker stop %i & docker rm -f %i)
 ```
 
 then running the image again and reconnecting. If the connection still fails, try restarting the docker daemon:
