@@ -1,5 +1,4 @@
 #!/bin/bash
-set -x
 
 #=====================
 # Functions for the VNC utility
@@ -35,7 +34,7 @@ fi
 #=====================
 
 if [ -z "$LAUNCH_COMMAND" ]; then
-    LAUNCH_COMMAND="ionic emulate -c --address $IP"
+    LAUNCH_COMMAND="ionic emulate -c"
 fi
 
 #=====================
@@ -68,6 +67,11 @@ fi
 
 run_xvfb
 run_x11vnc
+
+echo && echo && echo && echo "::::::::::::::::::::::::::::::::"
+echo "SELECTED IP: "$IP
+echo "::::::::::::::::::::::::::::::::" && echo && echo && echo && echo
+sleep 600
 
 #=====================
 # Create the emulator
@@ -109,5 +113,5 @@ if [ "$UPDATE_PLATFORM" == "y" ]; then
 
 fi
 
-/bin/bash --login -c "$LAUNCH_COMMAND"
+/bin/bash --login -c "$LAUNCH_COMMAND" --address $IP
 exit
