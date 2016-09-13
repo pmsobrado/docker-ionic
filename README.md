@@ -15,6 +15,7 @@ Docker image to run your ionic app against a defined Android emulador and SDK
     - [Optional arguments](#optional-arguments-1)
     - [Possible inputs](#possible-inputs-1)
   - [VNC connection](#vnc-connection)
+    - [Linux](#linux)   
   - [Troubleshooting](#troubleshooting)
     - [Errors on the build or run step](#errors-on-the-build-or-run-step)
     - [Errors on the VNC connection](#errors-on-the-vnc-connection)
@@ -183,7 +184,7 @@ docker run --privileged -v /YOUR/SOURCES/FOLDER:/src -e LAUNCH_COMMAND="YOUR_ION
 
 ## VNC connection
 
-Linux:
+###Linux:
 
 Open **Remmina**, a built-in app in Ubuntu. Configure a new connection like this:
 
@@ -199,7 +200,7 @@ Open **Remmina**, a built-in app in Ubuntu. Configure a new connection like this
 
 Click on '**Connect**' -or '**Save**' if you want to store the connection for further uses- and you should be able to see the emulator, as long as the image is up and running.
 
-Linux & Windows:
+###Linux & Windows:
 
 A simpler solution is to use [VNC Viewer](https://chrome.google.com/webstore/detail/vnc%C2%AE-viewer-for-google-ch/iabmpiboiopbgfabjmgeedhcmjenhbla) for Chrome (of course, Chrome will be required). Just open it, and enter the IP, then the password.
 
