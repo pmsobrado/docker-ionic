@@ -65,23 +65,30 @@ fi
 # Start VNC
 #=====================
 
-run_xvfb
-run_x11vnc
+run_xvfb &> /dev/null
+run_x11vnc &> /dev/null
 
 echo && echo && echo && echo "::::::::::::::::::::::::::::::::"
 echo "SELECTED IP: "$IP
-echo "::::::::::::::::::::::::::::::::" && echo && echo && echo && echo
-sleep 600
+echo "::::::::::::::::::::::::::::::::" && echo && echo
+sleep 10
 
 #=====================
 # Create the emulator
 #=====================
 
-android -s create avd --name Default --target android-$ANDROID_SDK_VERSION --abi $ABI -s 480x800 --force -d "$DEVICE"
+echo && echo "CREATING EMULATOR..."
+
+android -s create avd --name Default --target android-$ANDROID_SDK_VERSION --abi $ABI -s 480x800 --force -d "$DEVICE" &> /dev/null
+
+echo && echo "DONE" && echo && echo
 
 #=====================
-# Start Appium command
+# Start Ionic command
 #=====================
+
+echo && echo && echo "POPULATING PROJECT WITH DEPENDENCIES AND LAUNCHING..." && sleep 2
+echo && echo
 
 cd $SAM_DIR
 
