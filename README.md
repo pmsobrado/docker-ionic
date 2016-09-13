@@ -134,6 +134,8 @@ DEVICE="Nexus S"
 ABI="default/x86_64"
 ```
 
+**IMPORTANT**: x86 and x86_64 CPUs will not work under **Windows**, because any solution that use VirtualBox to embed Docker wont't support nested virtualization.
+
 Usage:
 ```
 docker run --privileged -v /YOUR/SOURCES/FOLDER:/src -e LAUNCH_COMMAND="YOUR_IONIC_COMMAND" -e DEVICE="Nexus S" -e ABI="default/x86_64" -e UPDATE_PLUGINS="y" --rm -t -i --net=host pasogo/docker-ionic
@@ -181,6 +183,8 @@ docker run --privileged -v /YOUR/SOURCES/FOLDER:/src -e LAUNCH_COMMAND="YOUR_ION
 
 ## VNC connection
 
+Linux:
+
 Open **Remmina**, a built-in app in Ubuntu. Configure a new connection like this:
 
 - **Name**: Whatever you like
@@ -194,6 +198,12 @@ Open **Remmina**, a built-in app in Ubuntu. Configure a new connection like this
 - **Password**: Your chosen VNC password. If none was given in the build, use '**1234**'.
 
 Click on '**Connect**' -or '**Save**' if you want to store the connection for further uses- and you should be able to see the emulator, as long as the image is up and running.
+
+Linux & Windows:
+
+A simpler solution is to use [VNC Viewer](https://chrome.google.com/webstore/detail/vnc%C2%AE-viewer-for-google-ch/iabmpiboiopbgfabjmgeedhcmjenhbla) for Chrome (of course, Chrome will be required). Just open it, and enter the IP, then the password.
+
+On Linux, you can use localhost as the **IP**; on **Windows**, notice the **IP** selected when running the image.
 
 ## Troubleshooting
 
