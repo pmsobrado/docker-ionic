@@ -1,6 +1,8 @@
 # docker-ionic
 Docker image to run your ionic app against a defined Android emulador and SDK
 
+[![](https://images.microbadger.com/badges/image/pasogo/docker-ionic.svg)](http://microbadger.com/images/pasogo/docker-ionic "Get your own image badge on microbadger.com")   [![](https://images.microbadger.com/badges/version/pasogo/docker-ionic.svg)](http://microbadger.com/images/pasogo/docker-ionic)
+
 # Table of Contents
   - [Prerequisites](#prerequisites)
   - [Build instructions](#build-instructions)
@@ -20,16 +22,27 @@ Docker image to run your ionic app against a defined Android emulador and SDK
 
 ## Prerequisites
 
-This docker image is designed to run on **Linux** systems, may not work on **Windows**. You will need at least **15GB** per build.
+You will need at least **15GB** per build.
 
 ## Build instructions
 
 You can build your Docker image running the Dockerfile with the following command:
 
+Linux:
 ```
 $ docker build -t pasogo/docker-ionic . && docker rmi -f $(docker images -f "dangling=true" -q) &> /dev/null
 ```
 
+Windows:
+```
+docker build -t pasogo/docker-ionic .
+```
+
+or pulling it from Docker:
+
+```
+docker pull pasogo/docker-ionic
+```
 
 ### Optional arguments
 
@@ -44,8 +57,15 @@ CORDOVA_VERSION=6.2.0
 ```
 
 Usage:
+
+Linux:
 ```
 $ docker build --build-arg JAVA_VERSION=8 --build-arg ANDROID_SDK_VERSION=23 --build-arg VNC_PASSWD=1234 -t amoron/docker-appium . && docker rmi -f $(docker images -f "dangling=true" -q) &> /dev/null
+```
+
+Windows:
+```
+docker build --build-arg JAVA_VERSION=8 --build-arg ANDROID_SDK_VERSION=23 --build-arg VNC_PASSWD=1234 -t amoron/docker-appium .
 ```
 
 ### Possible inputs
@@ -65,7 +85,7 @@ $ docker build --build-arg JAVA_VERSION=8 --build-arg ANDROID_SDK_VERSION=23 --b
 
 ### Notes
 
-The second part of the command, **'&& docker rmi -f $(docker images -f "dangling=true" -q) &> /dev/null'**, is an optional one that deletes past images of the builds so the PC does not end up with several duplicated images. It can be removed without affecting the build.
+The second part of the command, **'&& docker rmi -f $(docker images -f "dangling=true" -q) &> /dev/null'**, is an optional one, for Linux only, that deletes past images of the builds so the PC does not end up with several duplicated images. It can be removed without affecting the build.
 
 ## Run instructions
 
@@ -181,27 +201,45 @@ Click on '**Connect**' -or '**Save**' if you want to store the connection for fu
 
 You can try first stopping and removing the images:
 
+Linux:
 ```
 $ docker stop $(docker ps -a -q) && docker rm -f $(docker ps -a -q)
+```
+
+Windows:
+```
+for /f "delims=" %i in ('docker ps -a -q') do (docker stop %i & docker rm -f %i)
 ```
 
 then deleting them with **docker rmi -f image_id**. You can check the images ids by running:
 
 ```
-$ docker images
+docker images
 ```
 
 ### Errors on the VNC connection
 
 You can try first stopping and removing the images:
 
+Linux:
 ```
 $ docker stop $(docker ps -a -q) && docker rm -f $(docker ps -a -q)
 ```
 
+Windows:
+```
+for /f "delims=" %i in ('docker ps -a -q') do (docker stop %i & docker rm -f %i)
+```
+
 then running the image again and reconnecting. If the connection still fails, try restarting the docker daemon:
 
+Linux:
 ```
 $ sudo service docker restart
 ```
 
+Windows (as admin):
+```
+net stop com.docker.service
+net start com.docker.service
+```
