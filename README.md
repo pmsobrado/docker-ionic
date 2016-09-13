@@ -16,6 +16,7 @@ Docker image to run your ionic app against a defined Android emulador and SDK
     - [Possible inputs](#possible-inputs-1)
   - [VNC connection](#vnc-connection)
     - [Linux](#linux)   
+    - [Linux & Windows](#linux--windows)
   - [Troubleshooting](#troubleshooting)
     - [Errors on the build or run step](#errors-on-the-build-or-run-step)
     - [Errors on the VNC connection](#errors-on-the-vnc-connection)
