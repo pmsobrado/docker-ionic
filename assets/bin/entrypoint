@@ -68,11 +68,6 @@ fi
 run_xvfb &> /dev/null
 run_x11vnc &> /dev/null
 
-echo && echo && echo && echo "::::::::::::::::::::::::::::::::"
-echo "SELECTED IP: "$IP
-echo "::::::::::::::::::::::::::::::::" && echo && echo
-sleep 10
-
 #=====================
 # Create the emulator
 #=====================
