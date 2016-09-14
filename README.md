@@ -113,7 +113,7 @@ Please note that you **WILL** have to specify your sources folder for ionic to r
 
 - **--privileged**: Allow docker to use the host's virtualization technology (KVM)
 - **--net=host**: Connect the container to our local network, so we can easily access it with localhost
-- 
+
 **IMPORTANT**: '--net=host' option may cause troubles under **Windows**, because the gradle build task may not work with external IPs.
 
 ### Optional arguments
