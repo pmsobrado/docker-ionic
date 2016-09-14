@@ -215,7 +215,7 @@ Click on '**Connect**' -or '**Save**' if you want to store the connection for fu
 
 A simpler solution is to use [VNC Viewer](https://chrome.google.com/webstore/detail/vnc%C2%AE-viewer-for-google-ch/iabmpiboiopbgfabjmgeedhcmjenhbla) for Chrome (of course, Chrome will be required). Just open it, and enter the IP, then the password.
 
-For the IP, just use localhost (if running under **Windows** with the '--net=host' option, this may vary).
+For the IP, just use localhost (if running under **Windows** with the '--net=host' option, this may vary. The same will happen if you DON'T use that option under **Linux**. Using the recommended run commands is adviced).
 
 ## Troubleshooting
 
