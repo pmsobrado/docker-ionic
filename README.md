@@ -95,7 +95,7 @@ Run the image with the following command:
 
 Linux:
 ```
-$ docker run --privileged -v /YOUR/SOURCES/FOLDER:/src --rm -t -i --net=host pasogo/docker-ionic
+$ docker run --privileged -v /YOUR/SOURCES/FOLDER:/src --rm -t -i -p 5900:5900 pasogo/docker-ionic
 ```
 
 Windows:
@@ -103,18 +103,14 @@ Windows:
 docker run --privileged -v /YOUR/SOURCES/FOLDER:/src --rm -t -i -p 5900:5900 pasogo/docker-ionic
 ```
 
-**IMPORTANT**: You MUST use '-p 5900:5900' under **Windows** if you want VNC connection to be available. This is not necessary if you use the '--net=host' option, but this is not recommended for **Windows**. See more details below.
-
 ### Mandatory arguments
 
 Please note that you **WILL** have to specify your sources folder for ionic to run.
 
 ### Command specific arguments
 
-- **--privileged**: Allow docker to use the host's virtualization technology (KVM)
-- **--net=host**: Connect the container to our local network, so we can easily access it with localhost
+- **--privileged**: Allow docker to use the host's virtualization technology (KVM).
 
-**IMPORTANT**: '--net=host' option may cause troubles under **Windows**, because the gradle build task may not work with external IPs.
 
 ### Optional arguments
 
@@ -150,7 +146,7 @@ ABI="default/x86_64"
 
 Usage:
 ```
-docker run --privileged -v /YOUR/SOURCES/FOLDER:/src -e LAUNCH_COMMAND="YOUR_IONIC_COMMAND" -e DEVICE="Nexus S" -e ABI="default/x86_64" -e UPDATE_PLUGINS="y" --rm -t -i --net=host pasogo/docker-ionic
+docker run --privileged -v /YOUR/SOURCES/FOLDER:/src -e LAUNCH_COMMAND="YOUR_IONIC_COMMAND" -e DEVICE="Nexus S" -e ABI="default/x86_64" -e UPDATE_PLUGINS="y" --rm -t -i -p 5900:5900 pasogo/docker-ionic
 ```
 
 ### Possible inputs
@@ -215,7 +211,7 @@ Click on '**Connect**' -or '**Save**' if you want to store the connection for fu
 
 A simpler solution is to use [VNC Viewer](https://chrome.google.com/webstore/detail/vnc%C2%AE-viewer-for-google-ch/iabmpiboiopbgfabjmgeedhcmjenhbla) for Chrome (of course, Chrome will be required). Just open it, and enter the IP, then the password.
 
-For the IP, just use localhost (if running under **Windows** with the '--net=host' option, this may vary. The same will happen if you DON'T use that option under **Linux**. Using the recommended run commands is adviced).
+For the IP, just use localhost.
 
 ## Troubleshooting
 
