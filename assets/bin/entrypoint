@@ -20,21 +20,11 @@ NPM_FILE=package.json
 BOWER_FILE=bower.json
 
 #=====================
-# Store the IP to specify to ionic command to avoid user interaction
-#=====================
-
-if [[ $(ifconfig eth | grep 'inet addr:' -m 1 | cut -d: -f2 | awk '{ print $1}') == "" ]]; then
-    IP=$(ifconfig wlan | grep 'inet addr:' -m 1 | cut -d: -f2 | awk '{ print $1}')
-else
-    IP=$(ifconfig eth | grep 'inet addr:' -m 1 | cut -d: -f2 | awk '{ print $1}')
-fi
-
-#=====================
 # Default ionic command
 #=====================
 
 if [ -z "$LAUNCH_COMMAND" ]; then
-    LAUNCH_COMMAND="ionic emulate -c"
+    LAUNCH_COMMAND="ionic emulate -l -c"
 fi
 
 #=====================
@@ -115,5 +105,5 @@ if [ "$UPDATE_PLATFORM" == "y" ]; then
 
 fi
 
-/bin/bash -c "$LAUNCH_COMMAND" --address $IP
+/bin/bash -c "$LAUNCH_COMMAND"
 exit
