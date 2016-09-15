@@ -106,11 +106,8 @@ RUN curl -sL https://deb.nodesource.com/setup_6.x | sudo -E bash - \
   && npm install -g bower \
   && npm install -g gulp \
   && npm install -g cordova@${CORDOVA_VERSION} \
-  && ln -s $ANDROID_HOME/platform-tools/adb /usr/local/sbin/adb
-  
-RUN chmod 777 -R /root/
-  
-RUN npm install -g ionic@${IONIC_VERSION}
+  && ln -s $ANDROID_HOME/platform-tools/adb /usr/local/sbin/adb \
+  && npm install -g ionic@${IONIC_VERSION}
 
 EXPOSE 5900
 
