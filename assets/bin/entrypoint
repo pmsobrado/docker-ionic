@@ -15,7 +15,7 @@ function run_x11vnc() {
 # Environment variables
 #=====================
 
-SAM_DIR="/src"
+SAM_DIR=/src
 NPM_FILE=package.json
 BOWER_FILE=bower.json
 
@@ -115,5 +115,5 @@ if [ "$UPDATE_PLATFORM" == "y" ]; then
 
 fi
 
-/bin/bash --login -c "$LAUNCH_COMMAND" --address $IP
+/bin/bash -c "$LAUNCH_COMMAND" --address $IP
 exit

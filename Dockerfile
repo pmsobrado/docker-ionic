@@ -114,6 +114,6 @@ RUN npm install -g ionic@${IONIC_VERSION}
 
 EXPOSE 5900
 
-COPY ./assets/bin/entrypoint /
-RUN chmod +x /entrypoint
-ENTRYPOINT ["/entrypoint"]
+ADD assets/bin/entrypoint /entrypoint
+RUN chmod +x /entrypoint && cat /entrypoint
+ENTRYPOINT ["/bin/bash","/entrypoint"]
