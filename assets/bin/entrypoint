@@ -24,7 +24,7 @@ BOWER_FILE=bower.json
 #=====================
 
 if [ -z "$LAUNCH_COMMAND" ]; then
-    LAUNCH_COMMAND="ionic emulate -l -c"
+    LAUNCH_COMMAND="ionic emulate -c"
 fi
 
 #=====================
