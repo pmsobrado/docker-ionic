@@ -86,7 +86,7 @@ RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys EB9B1D8886F44E2A \
     x11vnc \
     xvfb \
   && curl -sL https://deb.nodesource.com/setup_6.x | sudo -E bash - \
-  && apt-get install -y nodejs \
+  && apt-get install -y --no-install-recommends nodejs \
   && apt-get -qqy clean && rm -rf /var/cache/apt/* \
   && npm install -g bower gulp cordova@${CORDOVA_VERSION} ionic@${IONIC_VERSION} \
   && ln -s $ANDROID_HOME/platform-tools/adb /usr/local/sbin/adb
