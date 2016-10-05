@@ -15,6 +15,9 @@ ARG VNC_PASSWD=1234
 # Env variables
 #==========================
 
+ENV SHELL "/bin/bash"
+ENV X11_RESOLUTION "480x600x24"
+ENV DISPLAY :1
 ENV VNC_PASSWD ${VNC_PASSWD}
 ENV DEBIAN_FRONTEND noninteractive
 ENV ANDROID_SDK_VERSION ${ANDROID_SDK_VERSION}
@@ -23,6 +26,7 @@ ENV JAVA_VERSION ${JAVA_VERSION}
 ENV IONIC_VERSION ${IONIC_VERSION}
 ENV CORDOVA_VERSION ${CORDOVA_VERSION}
 ENV ANDROID_HOME /opt/android-sdk-linux
+ENV PATH $PATH:$ANDROID_HOME/platform-tools:$ANDROID_HOME/tools
 ENV SDK_PACKAGES \
 platform-tools,\
 build-tools-23.0.3,\
@@ -44,70 +48,70 @@ extra-google-google_play_services,\
 extra-google-m2repository
 
 #==========================
-# Install Android SDK's and Platform tools, among with other necessary packages
+# Add external files
 #==========================
 
 ADD assets/etc/apt/apt.conf.d/99norecommends /etc/apt/apt.conf.d/99norecommends
 ADD assets/etc/apt/sources.list /etc/apt/sources.list
 
-RUN apt-get update -y && apt-get -y upgrade \
-  && apt-get install -y software-properties-common python-software-properties \
-  && add-apt-repository ppa:openjdk-r/ppa -y \
+#==========================
+# Install necessary packages, Appium and NPM
+#==========================
+
+RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys EB9B1D8886F44E2A \
   && apt-get update -y \
   && apt-get -y --no-install-recommends install \
-    xvfb \
-    x11vnc \
-    libvirt-bin \
-    qemu-kvm \
-    git \
-    libxi6 \
-    psmisc \
+    apt-transport-https \
     build-essential \
-    libgconf-2-4 \
-    libc6-i386 \
-    lib32stdc++6 \
+    curl \
+    g++ \
+    git \
     lib32gcc1 \
     lib32ncurses5 \
+    lib32stdc++6 \
     lib32z1 \
-    wget \
-    curl \
-    unzip \
+    libc6-i386 \
+    libgconf-2-4 \
+    libvirt-bin \
+    libxi6 \
+    make \
     openjdk-${JAVA_VERSION}-jdk \
-  && wget --progress=dot:giga -O /opt/android-sdk-linux.tgz \
+    psmisc \
+    python \
+    python-software-properties \
+    qemu-kvm \
+    software-properties-common \
+    unzip \
+    wget \
+    x11vnc \
+    xvfb \
+  && curl -sL https://deb.nodesource.com/setup_6.x | sudo -E bash - \
+  && apt-get install -y nodejs \
+  && apt-get -qqy clean && rm -rf /var/cache/apt/* \
+  && npm install -g bower gulp cordova@${CORDOVA_VERSION} ionic@${IONIC_VERSION} \
+  && ln -s $ANDROID_HOME/platform-tools/adb /usr/local/sbin/adb
+    
+#==========================
+# Install Android SDK's and Platform tools
+#==========================
+    
+RUN wget --progress=dot:giga -O /opt/android-sdk-linux.tgz \
     https://dl.google.com/android/android-sdk_r$ANDROID_SDKTOOLS_VERSION-linux.tgz \
   && tar xzf /opt/android-sdk-linux.tgz -C /tmp \
   && rm /opt/android-sdk-linux.tgz \
   && mv /tmp/android-sdk-linux $ANDROID_HOME \
-  && apt-get -qqy clean && rm -rf /var/cache/apt/*
-  
-RUN echo 'y' | $ANDROID_HOME/tools/android update sdk -s -u -a -t ${SDK_PACKAGES} \
+  && echo 'y' | $ANDROID_HOME/tools/android update sdk -s -u -a -t ${SDK_PACKAGES} \
   && echo 'y' | $ANDROID_HOME/tools/android update sdk -s -u -a -t tools \
-  && mv $ANDROID_HOME/temp/tools_*.zip $ANDROID_HOME/tools.zip \
-  && unzip $ANDROID_HOME/tools.zip -d $ANDROID_HOME/ \
+  && if [ -f $ANDROID_HOME/temp/tools_*.zip ]; \
+     then mv $ANDROID_HOME/temp/tools_*.zip $ANDROID_HOME/tools.zip \
+          && unzip $ANDROID_HOME/tools.zip -d $ANDROID_HOME/; \
+     fi \
   && rm -rf $ANDROID_HOME/extras/android/m2repository \
   && echo 'y' | $ANDROID_HOME/tools/android update sdk --no-ui
 
-ENV PATH $PATH:$ANDROID_HOME/platform-tools:$ANDROID_HOME/tools
-
 #==========================
-# X11 Configuration
+# Final steps
 #==========================
-
-ENV X11_RESOLUTION "480x600x24"
-ENV DISPLAY :1
-ENV SHELL "/bin/bash"
-
-#==========================
-# Install SAM Dependencies
-#==========================
-
-RUN curl -sL https://deb.nodesource.com/setup_6.x | sudo -E bash - \
-  && apt-get install -y nodejs \
-  && npm install -g bower \
-  && npm install -g gulp \
-  && npm install -g cordova@${CORDOVA_VERSION} \
-  && ln -s $ANDROID_HOME/platform-tools/adb /usr/local/sbin/adb \
-  && npm install -g ionic@${IONIC_VERSION}
 
 EXPOSE 5900
 

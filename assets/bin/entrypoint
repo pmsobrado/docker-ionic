@@ -11,6 +11,8 @@ function run_x11vnc() {
   killall x11vnc && pgrep x11vnc || x11vnc -display $DISPLAY -shared -xkb -skip_lockkeys -forever -noxdamage -passwd $VNC_PASSWD &> /dev/null &
 }
 
+echo && echo
+
 #=====================
 # Environment variables
 #=====================
@@ -44,14 +46,6 @@ if [ -z "$ABI" ]; then
 fi
 
 #=====================
-# Update Android SDK if user chose it
-#=====================
-
-if [ "$UPDATE_SDK" == "y" ]; then
-  echo 'y' | android update sdk --no-ui
-fi
-
-#=====================
 # Start VNC
 #=====================
 
@@ -59,14 +53,23 @@ run_xvfb &> /dev/null
 run_x11vnc &> /dev/null
 
 #=====================
+# Update Android SDK if user chose it
+#=====================
+
+if [ "$UPDATE" == "y" ]; then
+  rm -rf $ANDROID_HOME/extras/android/m2repository &> /dev/null &
+  echo "UPDATING ANDROID PACKAGES..." && sleep 2 && echo && echo
+  echo 'y' | android update sdk --no-ui
+  echo && echo && echo "DONE." && sleep 2
+fi
+
+#=====================
 # Create the emulator
 #=====================
 
-echo && echo "CREATING EMULATOR..."
-
+echo && echo && echo "CREATING AND LAUNCHING EMULATOR..."
 android -s create avd --name Default --target android-$ANDROID_SDK_VERSION --abi $ABI -s 480x800 --force -d "$DEVICE" &> /dev/null
-
-echo && echo "DONE" && echo && echo
+emulator -avd Default &> /dev/null & sleep 60 && echo && echo "DONE."
 
 #=====================
 # Start Ionic command
@@ -96,6 +99,7 @@ if [ "$UPDATE_PLUGINS" == "y" ]; then
     fi
     
 fi
+
 gulp profile --development
 
 if [ "$UPDATE_PLATFORM" == "y" ]; then
@@ -105,5 +109,14 @@ if [ "$UPDATE_PLATFORM" == "y" ]; then
 
 fi
 
-/bin/bash -c "$LAUNCH_COMMAND"
+/bin/bash -c "$LAUNCH_COMMAND" 
+
+#=====================
+# Once finished, close everything
+#=====================
+
+while pgrep emulator > /dev/null; do sleep 1; done
+echo && echo && echo "DONE." && sleep 2
+echo && echo && echo "CLEANING UP AND EXITING..." && sleep 2 && echo && echo
+chown -R $HOST_UID:$HOST_GID /src/* &> /dev/null &
 exit
