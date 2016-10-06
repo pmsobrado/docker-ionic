@@ -89,6 +89,7 @@ if [ "$UPDATE_PLUGINS" == "y" ]; then
       then
       npm install
       npm update
+      npm install gulp
     fi
 
     # Checking if there is a bower file
