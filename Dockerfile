@@ -105,7 +105,11 @@ RUN wget --progress=dot:giga -O /opt/android-sdk-linux.tgz \
   && if [ -f $ANDROID_HOME/temp/tools_*.zip ]; \
      then mv $ANDROID_HOME/temp/tools_*.zip $ANDROID_HOME/tools.zip \
           && unzip $ANDROID_HOME/tools.zip -d $ANDROID_HOME/; \
-     fi
+     fi \
+  && if [ "$ANDROID_SDKTOOLS_VERSION" -gt 24 ]; \
+    then android update sdk --no-ui --all --filter build-tools-$ANDROID_SDKTOOLS_VERSION.0.1,android-$ANDROID_SDKTOOLS_VERSION,extra-android-m2repository; \  
+  && fi \
+
 
 #==========================
 # Final steps
